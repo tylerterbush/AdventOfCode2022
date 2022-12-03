@@ -1,0 +1,19 @@
+package main
+
+import "AdventOfCode2022/common"
+
+func partOne() {
+	// Replace _ with `lines`
+	_, err := common.GetLinesFromFile("input.txt")
+	common.FatalIf(err)
+}
+
+func partTwo() {
+	_, err := common.GetLinesFromFile("input.txt")
+	common.FatalIf(err)
+}
+
+func main() {
+	partOne()
+	partTwo()
+}
