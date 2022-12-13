@@ -3,8 +3,10 @@ package main
 import (
 	"AdventOfCode2022/common"
 	"encoding/json"
+	"fmt"
 	"log"
 	"math"
+	"sort"
 )
 
 /*
@@ -19,12 +21,12 @@ If only one of the vals is a list, convert the integer to a list containing only
 Pt 1: What is the SUM of all indices where pairs are in the correct order?
  */
 
-func buildInput() [][]interface{} {
+func buildInput(filepath string) [][]interface{} {
 	var (
 		arrays [][]interface{}
 	)
 
-	lines, err := common.GetLinesFromFile("13/input2.txt")
+	lines, err := common.GetLinesFromFile(filepath)
 	common.FatalIf(err)
 
 	for _, line := range lines {
@@ -38,12 +40,9 @@ func buildInput() [][]interface{} {
 	return arrays
 }
 
-// 621 is too low
-// 5131 is too low
-// 5778 is too high
 func partOne() {
 	var (
-		arrays = buildInput()
+		arrays = buildInput("13/input.txt")
 		index = 1
 		validIndexes []int
 	)
@@ -66,6 +65,11 @@ func partOne() {
 
 // Returns whether the lists are in the right order
 func listComparisonHelper(listOne []interface{}, listTwo []interface{}) int {
+	// If both lists are empty, just continue. Can't make a decision yet
+	if len(listOne) == 0 && len(listTwo) == 0 {
+		return 0
+	}
+
 	// Base case, if list one is empty and list two isn't then they're in the right order
 	// If they're both 0 then we can assume it's ok
 	if len(listOne) == 0 { return 1 }
@@ -112,16 +116,39 @@ func listComparisonHelper(listOne []interface{}, listTwo []interface{}) int {
 	}
 
 	// Lists are exactly the same
-	log.Println("LISTS ARE THE SAME")
 	return 0
 }
 
 func partTwo() {
-	_, err := common.GetLinesFromFile("input.txt")
-	common.FatalIf(err)
+	var (
+		arrays = buildInput("13/input2.txt")
+	)
+
+	sort.Slice(arrays, func(i int, j int) bool {
+		return listComparisonHelper(arrays[i], arrays[j]) == 1
+	})
+
+	var (
+		bufferOne = "[[2]]"
+		bufferTwo = "[[6]]"
+
+		bufferOneIdx int
+		bufferTwoIdx int
+	)
+
+	for i, arr := range arrays {
+		arrStr := fmt.Sprintf("%+v", arr)
+		if arrStr == bufferOne {
+			bufferOneIdx = i+1
+		} else if arrStr == bufferTwo {
+			bufferTwoIdx = i+1
+		}
+	}
+
+	log.Println("Part Two - locations of both buffers after sorting multiplied together:", bufferOneIdx * bufferTwoIdx)
 }
 
 func main() {
 	partOne()
-	//partTwo()
+	partTwo()
 }
